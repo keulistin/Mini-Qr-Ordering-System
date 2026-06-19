@@ -4,36 +4,26 @@
  * - Retrieving all products
  */
 
-const db= require('../config/db');
+const productService = require("../services/productService");
 
-// Get all products
-exports.getAllProducts = (req, res) => {
+/**
+ * GET /api/products
+ */
 
-    //SQL query to fetch products 
-    const sql = `
-        SELECT 
-            product_id,
-            product_name,
-            product_description,
-            product_price,
-            is_available,
-            img_url,
-            product_created
-        FROM products
-        ORDER BY product_name DESC
-    `;
+exports.getProducts = async (req, res) => {
 
-    db.query(sql, (err, results) => {
-        if (err) {
-            console.error('Error fetching products:', err);
-            return res.status(500).json({ 
-                message: "Failed to fetch products" 
-            });
-        }
+    try {
+        const products = await productService.getAllProducts();
 
         return res.status(200).json({
-            message: "Products fetched successfully",
-            data: results
+            message: "Products retrieved successfully",
+            data: products
         });
-    });
+    } catch (error) {
+        console.error(error);
+
+        return res.status(500).json({
+            message: "Failed to retrieve products"
+        });
+    }
 };
